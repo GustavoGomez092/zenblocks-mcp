@@ -1,0 +1,47 @@
+{
+  "name": "zenblocks-mcp",
+  "version": "1.0.0",
+  "description": "An MCP server that helps ypu create zen blocks for your Wordpress theme",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "zenblocks",
+    "wordpress",
+    "typescript",
+    "ai-tools",
+    "claude",
+    "copilot"
+  ],
+  "license": "MIT",
+  "author": "Gustavo Gomez",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf build",
+    "prepublishOnly": "npm run clean && npm run build && chmod +x build/index.js",
+    "start": "node build/index.js",
+    "dev": "tsc && node build/index.js",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+      "biome check --files-ignore-unknown=true",
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "*": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "@types/node": "^24.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.3",
+    "axios": "^1.11.0",
+    "zod": "^3.25.76"
+  }
+}
