@@ -3,3 +3,5 @@ export const capabilities = {
   prompts: {},
   tools: {},
 }
+
+const test = "Hello, world!"
