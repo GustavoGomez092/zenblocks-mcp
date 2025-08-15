@@ -1,28 +1,48 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { readFileFromDocs } from "../utils/fileReader.js";
+import {
+	findResourceMapping,
+	getAllResourceMappings,
+} from "./resourceMappings.js";
 
 export const createResources = (server: McpServer) => {
-	server.registerResource(
-		"zenblocks:resources:overview",
-		"zenblocks://overview",
-		{
-			title: "Overview",
-			description: "An overview of how to use Zenblocks",
-			mimetype: "text/markdown",
-		},
-		async (uri) => {
-			// Implementation for the overview resource
-			console.log(uri);
-			const content = await fetch(uri.href).then((res) => res.text());
+	const mappings = getAllResourceMappings();
 
-			return {
-				contents: [
-					{
-						uri: uri.href,
-						text: content,
-						mimeType: "text/markdown",
-					},
-				],
-			};
-		},
-	);
+	// Register all resources based on mappings
+	for (const mapping of mappings) {
+		server.registerResource(
+			`zenblocks:resources:${mapping.filename.replace(".md", "")}`,
+			mapping.uri,
+			{
+				title: mapping.title,
+				description: mapping.description,
+				mimetype: mapping.mimeType,
+			},
+			async (uri) => {
+				let content = "";
+
+				try {
+					const resourceMapping = findResourceMapping(uri.href);
+					if (resourceMapping) {
+						content = await readFileFromDocs(resourceMapping.filename);
+					} else {
+						content = "Resource not found.";
+					}
+				} catch (error) {
+					console.error("Error reading resource:", error);
+					content = "Error loading resource content.";
+				}
+
+				return {
+					contents: [
+						{
+							uri: uri.href,
+							text: content,
+							mimeType: "text/markdown",
+						},
+					],
+				};
+			},
+		);
+	}
 };

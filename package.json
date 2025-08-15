@@ -18,14 +18,14 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsc",
-		"build:watch": "tsc --watch",
 		"clean": "rm -rf build",
 		"prepublishOnly": "npm run clean && npm run build && chmod +x build/index.js",
-		"start": "node build/index.js",
-		"dev": "tsc && node build/index.js",
+		"start": "node dist/index.js",
+		"dev": "npm run postbuild && npm run build && npx tsx watch src/index.ts",
 		"biome:check-staged": "lint-staged",
 		"biome:check": "npx biome check --write",
-		"prepare": "husky"
+		"prepare": "husky",
+		"postbuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
 	},
 	"lint-staged": {
 		"**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
