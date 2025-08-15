@@ -8,7 +8,7 @@ export async function start() {
 		logInfo("Starting ZenBlocks MCP Server...");
 
 		const version = await readVersion();
-		const server = createServer(version);
+		const server = await createServer(version);
 
 		const transport = new StdioServerTransport();
 		logInfo("Transport initialized: stdio");

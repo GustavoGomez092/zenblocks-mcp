@@ -1,11 +1,24 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { readFileFromDocs } from "../utils/fileReader.js";
+import { getAllResourceMappings } from "./resourceMappings.js";
 
-export const createTools = (server: McpServer) => {
+export const createTools = async (server: McpServer) => {
+	// use the resource mappings file to create a single tool that returns all the contents of all the resources
+	const mappings = getAllResourceMappings();
+	const allResources: string[] = [];
+
+	for (const mapping of mappings) {
+		// get the resource content
+		const content = await readFileFromDocs(mapping?.filename);
+
+		allResources.push(content);
+	}
+
 	server.registerTool(
-		"zenblocks-overview",
+		"zenblocks-docs",
 		{
-			title: "ZenBlocks Overview",
-			description: "A brief overview of ZenBlocks",
+			title: "ZenBlocks docs",
+			description: "Complete documentation on how to make ZenBlocks",
 			// Add more tool configuration here
 		},
 		async () => {
@@ -13,7 +26,7 @@ export const createTools = (server: McpServer) => {
 				content: [
 					{
 						type: "text",
-						text: "ZenBlocks is a powerful tool for creating and managing blocks in WordPress.",
+						text: allResources.join("\n"),
 					},
 				],
 			};

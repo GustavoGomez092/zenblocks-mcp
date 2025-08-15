@@ -15,6 +15,109 @@ theme-name/
         ├── component-name.js
         └── component-name.json
 ```
+
+**CRITICAL: ALWAYS Review the PHP code so that the template has only one child.**
+* When creating markup for a Zen block component you MUST make sure that you wrap all block content in a single parent element this component MUST have it's first class name be the same name as the containing folder name. 
+
+❌ **Don't do this**: Having more than one child on the template file or multiple childs.
+
+```php
+<div class="company-intro layout-<?php echo esc_attr($layout); ?>"></div>
+<?php if ($show_breadcrumb): ?>
+<nav class="breadcrumb">
+  <div zen-edit="breadcrumb_content" zen-type="text">[Home / About]</div>
+</nav>
+<?php endif; ?>
+
+<div class="intro-container">
+  <div class="content-section">
+    <div class="text-content">
+      <h1 zen-edit="main_title" zen-type="text">Crafting Excellence Together</h1>
+
+      <div zen-edit="description" zen-type="wysiwyg">
+        <p>Lorem ipsum</p>
+      </div>
+
+      <?php if ($show_cta_button): ?>
+      <div class="cta-section">
+        <a zen-edit="cta_link" zen-type="link" href="#" class="cta-button">
+          <span zen-edit="cta_text" zen-type="text">Learn More</span>
+        </a>
+      </div>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($show_decorative_badge): ?>
+    <div class="decorative-badge">
+      <div class="badge-circle">
+        <div class="badge-inner">
+          <div zen-edit="badge_content" zen-type="text">R</div>
+        </div>
+      </div>
+    </div>
+    <?php endif; ?>
+  </div>
+
+  <?php if ($show_hero_image): ?>
+  <div class="image-section">
+    <div class="image-container">
+      <img zen-edit="hero_image" zen-type="image" src="" alt="Team collaboration" class="hero-image" />
+    </div>
+  </div>
+  <?php endif; ?>
+</div>
+</div>
+```
+
+✅ **Do this**: Having always one child and only one at all times
+
+```php
+<div class="company-intro layout-<?php echo esc_attr($layout); ?>">
+  <?php if ($show_breadcrumb): ?>
+    <nav class="breadcrumb">
+      <div zen-edit="breadcrumb_content" zen-type="text">[Home / About]</div>
+    </nav>
+  <?php endif; ?>
+  <div class="intro-container">
+    <div class="content-section">
+      <div class="text-content">
+        <h1 zen-edit="main_title" zen-type="text">Crafting Excellence Together</h1>
+
+        <div zen-edit="description" zen-type="wysiwyg">
+          <p>Lorem ipsum</p>
+        </div>
+
+        <?php if ($show_cta_button): ?>
+          <div class="cta-section">
+            <a zen-edit="cta_link" zen-type="link" href="#" class="cta-button">
+              <span zen-edit="cta_text" zen-type="text">Learn More</span>
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <?php if ($show_decorative_badge): ?>
+        <div class="decorative-badge">
+          <div class="badge-circle">
+            <div class="badge-inner">
+              <div zen-edit="badge_content" zen-type="text">R</div>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($show_hero_image): ?>
+      <div class="image-section">
+        <div class="image-container">
+          <img zen-edit="hero_image" zen-type="image" src="" alt="Team collaboration" class="hero-image" />
+        </div>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+```
+
 * You MUST use the editable elements inside the HTML template (e.g., ``<h2 zen-edit="title">Default Title</h2>``)
 * You can specify the editor type using zen-type attribute (e.g., ``<div zen-edit="content" zen-type="wysiwyg">Default content</div>``)
 * YOU MUST REMEMBER AT ALL TIMES WHEN CREATING THE HTML that you have these editable field types:
@@ -28,11 +131,79 @@ theme-name/
 * the main PHP file MUST have the same name as the containing folder (e.g., ``my-custom-block/my-custom-block.php``)
 * When adding a new zen block you MUST ALWAYS Create its corresponding style, script and JSON files, so they are always available for the user even if they are not needed. The naming for all files MUST ALWAYS be the same as the containing folder (e.g., ``my-custom-block/my-custom-block.css``, ``my-custom-block/my-custom-block.js``, ``my-custom-block/my-custom-block.json``)
 * you MUST always ask if the name for the new Zen component you are going to build is OK with the user, you MUST NOT skip this step, ALWAYS ask for the name of the component before creating the folder and files.
-* You MUST ALWAYS ask once and only once if the user is going to be using tailwind for their styling, Once you have their answer, keep it so you don't ask it again. Always ask this before creating the first component.
+* You MUST ALWAYS ask once and only once if the user is going to be using Tailwind or nested CSS for their styling, Once you have their answer, keep it so you don't ask it again. Always ask this before creating the first component. You MUST NOT accept any other answer other than Tailwind or Nested CSS.
+* You MUST ALWAYS ask once and only once if the user is going to be using GSAP or vanilla JS for their animations and interactions, Once you have their answer, keep it so you don't ask it again. Always ask this before creating the first component. You MUST NOT accept any other answer other than GSAP or Vanilla JS.
 * If the user is going to use tailwind to style the zen block components, you MUST always use the @apply approach for separating the styles from the markup, you MUST use relevant naming conventions for creating the component clasess and then bind the styles inside the CSS file using @apply, you MUST NOT use tailwind classess inside the markup.
-* When creating markup for a Zen block component you MUST make sure that you wrap all block content in a single parent element this component MUST have it's first class name be the same name as the containing folder name. (e.g., ``<div class="my-custom-block">...</div>``)
 
-## CSS Styling Requirements for Component Generation
+
+## JavaScript File Generation Requirements
+
+### Animation Framework Selection:
+**FIRST, always ask the user:** "Will this component use **Vanilla JavaScript** or **GSAP** for animations?"
+
+### Vanilla JavaScript Animation Requirements:
+When using Vanilla JavaScript:
+- **Handle initial animation states manually** - elements that will animate in (fade, slide, etc.) must start with their "from" state applied via JavaScript
+- Use `requestAnimationFrame` or CSS transitions for smooth animations
+- Implement proper entrance animations by:
+  1. Setting initial state (opacity: 0, transform values, etc.) via JavaScript on page load
+  2. Triggering animations on scroll, interaction, or page load
+  3. Using intersection observers for scroll-triggered animations
+
+**Example Vanilla JS Structure:**
+```javascript
+// Set initial states for elements that will animate
+function setInitialStates() {
+  const animatedElements = document.querySelectorAll('.fade-in-element');
+  animatedElements.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+  });
+}
+
+// Animate elements
+function animateIn(element) {
+  element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  element.style.opacity = '1';
+  element.style.transform = 'translateY(0)';
+}
+```
+
+### GSAP Animation Requirements:
+When using GSAP:
+- **Always use `gsap.fromTo()`** to explicitly define both initial and final animation states
+- Never rely on CSS for initial animation states - let GSAP handle everything
+- Use GSAP's built-in performance optimizations (force3D, etc.)
+
+**Example GSAP Structure:**
+```javascript
+// GSAP Animation - fromTo method handles initial state
+gsap.fromTo('.fade-in-element', 
+  { 
+    opacity: 0, 
+    y: 20 
+  },
+  { 
+    opacity: 1, 
+    y: 0, 
+    duration: 0.6, 
+    ease: "power2.out" 
+  }
+);
+```
+
+### General JavaScript Requirements:
+- Use modern ES6+ syntax (const/let, arrow functions, etc.)
+- Implement proper error handling
+- Use intersection observers for scroll-triggered animations
+- Ensure accessibility (respect `prefers-reduced-motion`)
+- Include proper event cleanup/removal
+- Use semantic and descriptive variable names
+- Comment complex animation logic
+
+---
+
+## Enhanced CSS Styling Requirements for Component Generation
 
 **CRITICAL: Always use scoped/nested CSS to prevent style conflicts**
 
@@ -42,6 +213,16 @@ theme-name/
 * **Never use global CSS selectors** that could affect other components on the page
 * **Prefix all class names** with a unique identifier specific to the component
 
+### **NEW: Animation State Requirements:**
+* **DO NOT add `opacity: 0` or hide elements with CSS** for entrance animations
+* **DO NOT use CSS transforms** for initial animation states (translateX, translateY, scale, etc.)
+* **All entrance animation logic MUST be handled by JavaScript** (either Vanilla JS or GSAP)
+* **CSS transitions are ONLY for:**
+  - Hover effects
+  - Focus states  
+  - Static interactions (button presses, form states)
+  - Non-entrance animations (continuous animations, background effects)
+
 ### Implementation Guidelines:
 
 **For vanilla CSS/HTML components:**
@@ -49,15 +230,21 @@ theme-name/
 .unique-component-name {
   /* All component styles nested here */
   .content { 
-  /* styles */
+    /* NO opacity: 0 or transform initial states here */
+    /* styles */
     .title {
+      /* styles */
+      .colored-text {
         /* styles */
-        .colored-text {
-            /* styles */
-        }
+      }
     }
     .button { 
-        /* styles */
+      /* Hover transitions are OK */
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background-color: #different-color;
+      }
     }
   }
 }
@@ -65,34 +252,76 @@ theme-name/
 
 **For Tailwind CSS components:**
 * Wrap the entire component in a container div with a unique class
-* use @apply for all Tailwind classes within this scoped container
-* Example: `<div className="my-unique-component">`
+* Use @apply for all Tailwind classes within this scoped container
+* **Avoid Tailwind opacity and transform classes** for elements that will have entrance animations
+
 ```css
 .unique-component-name {
   /* All component styles nested here */
   .content { 
-    @apply /* tailwind classes */;
+    @apply /* tailwind classes (no opacity-0, no transform classes for animated elements) */;
     .title {
+      @apply /* tailwind classes */;
+      .colored-text {
         @apply /* tailwind classes */;
-        .colored-text {
-            @apply /* tailwind classes */;
-        }
+      }
     }
     .button { 
-        @apply /* tailwind classes */;
+      @apply /* tailwind classes */ transition-colors duration-300;
+      
+      &:hover {
+        @apply /* hover state classes */;
+      }
     }
   }
 }
 ```
+
+### Animation-Related CSS Guidelines:
+* **Elements that will animate in:** Apply NO initial styling for animation states in CSS
+* **Static elements:** Style normally - no animation restrictions
+* **Hover/interaction effects:** Use CSS transitions freely
+* **Continuous animations:** CSS animations are acceptable (spinning loaders, pulsing effects, etc.)
 
 ### Why This Matters:
 * Prevents style bleeding between different components
 * Ensures component reusability without conflicts
 * Maintains predictable styling behavior
 * Allows multiple instances of components on the same page
+* **Prevents animation conflicts** between CSS and JavaScript
+* **Ensures consistent animation behavior** across different frameworks
 * Follows modern CSS architecture best practices
 
-**REMEMBER: No exceptions - every generated component MUST have scoped/nested CSS styling.**
+### Animation State Examples:
+
+**❌ WRONG - Don't do this in CSS:**
+```css
+.hero-section {
+  .fade-in-text {
+    opacity: 0; /* Don't hide for JS animations */
+    transform: translateY(20px); /* Don't set initial transform */
+  }
+}
+```
+
+**✅ CORRECT - Let JavaScript handle animation states:**
+```css
+.hero-section {
+  .fade-in-text {
+    /* Normal styling only - no animation initial states */
+    font-size: 2rem;
+    color: #333;
+    
+    /* Hover effects are fine */
+    transition: color 0.2s ease;
+    &:hover {
+      color: #666;
+    }
+  }
+}
+```
+
+**REMEMBER: No exceptions - every generated component MUST have scoped/nested CSS styling and MUST NOT include CSS-based initial animation states.**
 
 ## Critical Implementation Rule
 
@@ -270,3 +499,65 @@ With corresponding PHP:
 - `innerblocks`: Nested Gutenberg blocks
 
 Remember: **Every control must serve a purpose and be fully implemented in the PHP template. The zen-blocks system passes all JSON controls as PHP variables to your template, so unused controls are both wasteful and confusing to editors.**
+
+## ABOUT STYLES INSIDE A REPEATER
+**CRITICAL: ALWAYS reference the div automatically created by zen blocks for any repeater area.**
+
+❌ **Don't do this**: referencing only the container for styling
+
+```php
+    <?php if ($show_logos): ?>
+      <div class="testimonial-logos">
+        // logos-container has a child with a zen-repeater prop
+        <div class="logos-container">
+          <div zen-repeater="company_logos">
+            <div class="logo-item">
+              <img zen-edit="logo_image" zen-type="image" src="" alt="Company Logo" />
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+```
+```css
+  .testimonial-logos {
+    /* .logos-container is a repeater section in the PHP template */
+    .logos-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+  }
+```
+
+✅ **Do this**: reference the first div child of the repeater container to apply styles correctly
+
+```php
+    <?php if ($show_logos): ?>
+      <div class="testimonial-logos">
+        // logos-container has a child with a zen-repeater prop
+        <div class="logos-container">
+          <div zen-repeater="company_logos">
+            <div class="logo-item">
+              <img zen-edit="logo_image" zen-type="image" src="" alt="Company Logo" />
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+```
+
+```css
+  .testimonial-logos {
+    /* .logos-container is a repeater section in the PHP template */
+    .logos-container > div {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+  }
+```

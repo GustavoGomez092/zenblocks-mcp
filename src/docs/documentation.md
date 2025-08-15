@@ -2,30 +2,6 @@
 
 A powerful WordPress plugin for creating Gutenberg blocks using HTML/PHP templates with minimal configuration.
 
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Installation & Setup](#installation--setup)
-3. [Quick Start Guide](#quick-start-guide)
-4. [Block Configuration (block.json)](#block-configuration-blockjson)
-5. [WordPress Block JSON Configurations](#wordpress-block-json-configurations)
-6. [Template System](#template-system)
-7. [Control Types & Examples](#control-types--examples)
-8. [Zen Blocks Specific Features](#zen-blocks-specific-features)
-9. [Advanced Configuration](#advanced-configuration)
-10. [Configuration Constants](#configuration-constants)
-11. [Best Practices](#best-practices)
-
-## Overview
-
-Zen Blocks simplifies WordPress block development by allowing you to create custom Gutenberg blocks using familiar HTML/PHP templates without requiring complex JavaScript knowledge. The plugin automatically handles block registration, editor integration, and provides a rich set of controls for making your blocks interactive and customizable.
-
-## Installation & Setup
-
-1. **Install the Plugin**: Upload and activate the Zen Blocks plugin
-2. **Create Directory Structure**: Set up your theme's zen-blocks folder
-3. **Build Your Blocks**: Create templates, configurations, and assets
-
 ### Directory Structure
 
 ```
@@ -44,7 +20,7 @@ wp-content/themes/your-theme/zen-blocks/
 
 ## Quick Start Guide
 
-### 1. Create Your First Block
+### Create Your First Block
 
 **Step 1**: Create the directory
 ```bash
@@ -122,16 +98,22 @@ The `block.json` file is the heart of your block configuration. It defines metad
 
 ```json
 {
-    "$schema": "https://schemas.wp.org/trunk/block.json",
-    "apiVersion": 3,
-    "name": "your-namespace/block-name",
+    "name": "zen-blocks/block-name",
     "title": "Block Display Name",
-    "category": "text",
+    "category": "zen-blocks",
     "icon": "star",
     "description": "Description of what your block does",
     "keywords": ["keyword1", "keyword2", "keyword3"],
     "version": "1.0.0",
-    "textdomain": "your-textdomain"
+    "supports": {
+        "html": true,
+        "align": ["wide", "full"], 
+        "anchor": true,
+        "customClassName": true
+    },
+    "zenb": {
+        "controls": {}
+    }
 }
 ```
 
@@ -140,15 +122,6 @@ The `block.json` file is the heart of your block configuration. It defines metad
 Zen Blocks supports all standard WordPress block JSON configurations, providing full compatibility with the WordPress Block API. Below is a comprehensive reference of all available configuration options:
 
 ### Core Properties
-
-#### API Version
-The version of the Block API used by the block. The most recent version is 3
-
-```json
-{
-    "apiVersion": 3
-}
-```
 
 #### Name (Required)
 The name for a block is a unique string that identifies a block. Names have to be structured as namespace/block-name
@@ -195,35 +168,6 @@ An icon property should be specified to make it easier to identify a block. Thes
 ```
 
 Popular Dashicons include: `star`, `heart`, `admin-home`, `admin-site`, `admin-media`, `admin-page`, `admin-comments`, `admin-appearance`, `admin-plugins`, `admin-users`, `admin-tools`, `admin-settings`, `admin-network`, `menu`, `admin-generic`.
-
-### Block Relationships
-
-#### Parent
-Setting parent lets a block require that it is only available when nested within the specified blocks
-
-```json
-{
-    "parent": ["core/group", "zen-blocks/container"]
-}
-```
-
-#### Ancestor
-The ancestor property makes a block available inside the specified block types at any position of the ancestor block subtree
-
-```json
-{
-    "ancestor": ["core/post-content", "core/group"]
-}
-```
-
-#### Allowed Blocks
-The allowedBlocks specifies which block types can be the direct children of the block
-
-```json
-{
-    "allowedBlocks": ["core/paragraph", "core/heading", "zen-blocks/custom-item"]
-}
-```
 
 ### Block Metadata
 
@@ -294,52 +238,6 @@ Attributes provide the structured data needs of a block
         "settings": {
             "type": "object",
             "default": {}
-        }
-    }
-}
-```
-
-### Context System
-
-#### Provides Context
-Context provided for available access by descendants of blocks of this type
-
-```json
-{
-    "providesContext": {
-        "zen-blocks/containerStyle": "containerStyle",
-        "zen-blocks/accentColor": "accentColor"
-    }
-}
-```
-
-#### Uses Context
-Array of the names of context values to inherit from an ancestor provider
-
-```json
-{
-    "usesContext": ["postId", "postType", "zen-blocks/containerStyle"]
-}
-```
-
-### Selectors
-Any custom CSS selectors, keyed by root, feature, or sub-feature, to be used when generating block styles
-
-```json
-{
-    "selectors": {
-        "root": ".wp-block-zen-blocks-custom",
-        "color": {
-            "text": ".wp-block-zen-blocks-custom p",
-            "background": ".wp-block-zen-blocks-custom .background"
-        },
-        "typography": {
-            "fontSize": ".wp-block-zen-blocks-custom h1",
-            "lineHeight": ".wp-block-zen-blocks-custom .content"
-        },
-        "spacing": {
-            "padding": ".wp-block-zen-blocks-custom .inner",
-            "margin": ".wp-block-zen-blocks-custom .wrapper"
         }
     }
 }
@@ -495,121 +393,6 @@ This property adds block controls which allow the user to set a box shadow for a
 }
 ```
 
-#### Layout Support
-This value only applies to blocks that are containers for inner blocks
-
-```json
-{
-    "supports": {
-        "layout": {
-            "default": {
-                "type": "flex",
-                "flexWrap": "nowrap"
-            },
-            "allowSwitching": true,
-            "allowEditing": true,
-            "allowInheriting": true,
-            "allowSizingOnChildren": false,
-            "allowVerticalAlignment": true,
-            "allowJustification": true,
-            "allowOrientation": true,
-            "allowCustomContentAndWideSize": true
-        }
-    }
-}
-```
-
-#### Additional Support Properties
-
-```json
-{
-    "supports": {
-        "className": true,
-        "customClassName": true,
-        "html": true,
-        "inserter": true,
-        "lock": true,
-        "multiple": true,
-        "reusable": true,
-        "renaming": true,
-        "splitting": true,
-        "interactivity": {
-            "clientNavigation": true,
-            "interactive": true
-        }
-    }
-}
-```
-
-### Block Styles
-Block styles can be used to provide alternative styles to block
-
-```json
-{
-    "styles": [
-        {
-            "name": "default",
-            "label": "Default Style",
-            "isDefault": true
-        },
-        {
-            "name": "minimal",
-            "label": "Minimal Style"
-        },
-        {
-            "name": "bold",
-            "label": "Bold Style"
-        }
-    ]
-}
-```
-
-### Block Variations
-Block Variations is the API that allows a block to have similar versions of it, but all these versions share some common functionality
-
-```json
-{
-    "variations": [
-        {
-            "name": "hero-default",
-            "title": "Default Hero",
-            "description": "A standard hero banner",
-            "icon": "star",
-            "attributes": {
-                "layout": "default",
-                "show_title": true
-            },
-            "scope": ["block"],
-            "isActive": ["layout"]
-        },
-        {
-            "name": "hero-minimal",
-            "title": "Minimal Hero",
-            "description": "A minimal hero banner without title",
-            "icon": "minus",
-            "attributes": {
-                "layout": "minimal",
-                "show_title": false
-            },
-            "scope": ["block"],
-            "isActive": ["layout"]
-        }
-    ]
-}
-```
-
-### Block Hooks
-Block Hooks is an API that allows a block to automatically insert itself next to all instances of a given block type
-
-```json
-{
-    "blockHooks": {
-        "core/post-content": "after",
-        "core/group": "before"
-    }
-}
-```
-
 ### Example Configuration
 It provides structured example data for the block. This data is used to construct a preview for the block
 
@@ -623,40 +406,6 @@ It provides structured example data for the block. This data is used to construc
             "show_title": true
         }
     }
-}
-```
-
-### Asset Management
-
-#### Scripts
-Block type editor scripts definition. They will only be enqueued in the context of the editor
-
-```json
-{
-    "editorScript": "file:./editor.js",
-    "script": "file:./frontend.js",
-    "viewScript": ["file:./view.js", "my-shared-script"],
-    "viewScriptModule": "file:./view-module.js"
-}
-```
-
-#### Styles
-Block type frontend and editor styles definition
-
-```json
-{
-    "editorStyle": "file:./editor.css",
-    "style": ["file:./style.css", "shared-styles"],
-    "viewStyle": "file:./frontend-only.css"
-}
-```
-
-#### Server-Side Rendering
-PHP file to use when rendering the block type on the server
-
-```json
-{
-    "render": "file:./render.php"
 }
 ```
 
@@ -840,7 +589,7 @@ Dropdown selection with predefined options.
 **Usage in Template**:
 ```php
 <div class="content-wrapper layout-<?php echo esc_attr($layout_style); ?>">
-    <!-- Content here will have different styling based on layout -->
+    <!-- Component content nested here, never outside this container -->
 </div>
 ```
 
@@ -1150,29 +899,6 @@ Multiple selection dropdown for choosing multiple options.
 
 ## Zen Blocks Specific Features
 
-### Custom zenb Configuration
-
-The `zenb` property in your block.json file contains Zen Blocks-specific configurations:
-
-```json
-{
-    "zenb": {
-        "controls": {
-            // Control definitions here
-        },
-        "settings": {
-            "autoEnqueue": true,
-            "enableCache": true,
-            "debugMode": false
-        },
-        "permissions": {
-            "editableRoles": ["administrator", "editor"],
-            "visibleToRoles": ["administrator", "editor", "author"]
-        }
-    }
-}
-```
-
 ### Advanced Control Examples
 
 #### Grouped Controls
@@ -1182,44 +908,32 @@ Organize related controls into sections:
 {
     "zenb": {
         "controls": {
-            "layout_section": {
-                "type": "section",
-                "label": "Layout Settings",
-                "controls": {
-                    "columns": {
-                        "type": "range",
-                        "label": "Columns",
-                        "default": 3,
-                        "min": 1,
-                        "max": 6
-                    },
-                    "gap": {
-                        "type": "range",
-                        "label": "Gap Size",
-                        "default": 20,
-                        "min": 0,
-                        "max": 100,
-                        "step": 5
-                    }
-                }
+            "columns": {
+                "type": "range",
+                "label": "Columns",
+                "default": 3,
+                "min": 1,
+                "max": 6
             },
-            "style_section": {
-                "type": "section",
-                "label": "Style Settings",
-                "controls": {
-                    "border_radius": {
-                        "type": "range",
-                        "label": "Border Radius",
-                        "default": 8,
-                        "min": 0,
-                        "max": 50
-                    },
-                    "shadow": {
-                        "type": "toggle",
-                        "label": "Enable Shadow",
-                        "default": false
-                    }
-                }
+            "gap": {
+                "type": "range",
+                "label": "Gap Size",
+                "default": 20,
+                "min": 0,
+                "max": 100,
+                "step": 5
+            },
+            "border_radius": {
+                "type": "range",
+                "label": "Border Radius",
+                "default": 8,
+                "min": 0,
+                "max": 50
+            },
+            "shadow": {
+                "type": "toggle",
+                "label": "Enable Shadow",
+                "default": false
             }
         }
     }
@@ -1464,150 +1178,123 @@ Here's a comprehensive example showing all configuration options:
     
     "zenb": {
         "controls": {
-            "general_section": {
-                "type": "section",
-                "label": "General Settings",
-                "controls": {
-                    "block_title": {
-                        "type": "text",
-                        "label": "Block Title",
-                        "default": "Advanced Content",
-                        "help": "Main title for the content block"
-                    },
-                    "layout": {
-                        "type": "select",
-                        "label": "Layout Type",
-                        "default": "default",
-                        "options": [
-                            {"key": "default", "value": "Default Layout"},
-                            {"key": "content-left", "value": "Content Left"},
-                            {"key": "content-right", "value": "Content Right"},
-                            {"key": "centered", "value": "Centered"},
-                            {"key": "full-width", "value": "Full Width"}
-                        ]
-                    },
-                    "show_image": {
-                        "type": "toggle",
-                        "label": "Show Featured Image",
-                        "default": true
-                    }
+            "block_title": {
+                "type": "text",
+                "label": "Block Title",
+                "default": "Advanced Content",
+                "help": "Main title for the content block"
+            },
+            "layout": {
+                "type": "select",
+                "label": "Layout Type",
+                "default": "default",
+                "options": [
+                    {"key": "default", "value": "Default Layout"},
+                    {"key": "content-left", "value": "Content Left"},
+                    {"key": "content-right", "value": "Content Right"},
+                    {"key": "centered", "value": "Centered"},
+                    {"key": "full-width", "value": "Full Width"}
+                ]
+            },
+            "show_image": {
+                "type": "toggle",
+                "label": "Show Featured Image",
+                "default": true
+            },
+            "image_position": {
+                "type": "select",
+                "label": "Image Position",
+                "default": "left",
+                "options": [
+                    {"key": "left", "value": "Left"},
+                    {"key": "right", "value": "Right"},
+                    {"key": "top", "value": "Top"},
+                    {"key": "bottom", "value": "Bottom"}
+                ],
+                "condition": {
+                    "show_image": true
                 }
             },
-            
-            "content_section": {
-                "type": "section",
-                "label": "Content Settings",
-                "controls": {
-                    "image_position": {
-                        "type": "select",
-                        "label": "Image Position",
-                        "default": "left",
-                        "options": [
-                            {"key": "left", "value": "Left"},
-                            {"key": "right", "value": "Right"},
-                            {"key": "top", "value": "Top"},
-                            {"key": "bottom", "value": "Bottom"}
-                        ],
-                        "condition": {
-                            "show_image": true
-                        }
-                    },
-                    "content_alignment": {
-                        "type": "select",
-                        "label": "Content Alignment",
-                        "default": "left",
-                        "options": [
-                            {"key": "left", "value": "Left"},
-                            {"key": "center", "value": "Center"},
-                            {"key": "right", "value": "Right"}
-                        ]
-                    },
-                    "max_content_width": {
-                        "type": "range",
-                        "label": "Max Content Width (%)",
-                        "default": 100,
-                        "min": 50,
-                        "max": 100,
-                        "step": 5
-                    }
+            "content_alignment": {
+                "type": "select",
+                "label": "Content Alignment",
+                "default": "left",
+                "options": [
+                    {"key": "left", "value": "Left"},
+                    {"key": "center", "value": "Center"},
+                    {"key": "right", "value": "Right"}
+                ]
+            },
+            "max_content_width": {
+                "type": "range",
+                "label": "Max Content Width (%)",
+                "default": 100,
+                "min": 50,
+                "max": 100,
+                "step": 5
+            },
+            "background_color": {
+                "type": "color",
+                "label": "Background Color",
+                "default": "#ffffff"
+            },
+            "accent_color": {
+                "type": "color",
+                "label": "Accent Color",
+                "default": "#007cba"
+            },
+            "border_radius": {
+                "type": "range",
+                "label": "Border Radius (px)",
+                "default": 8,
+                "min": 0,
+                "max": 50,
+                "step": 2
+            },
+            "enable_shadow": {
+                "type": "toggle",
+                "label": "Enable Shadow",
+                "default": false
+            },
+            "shadow_intensity": {
+                "type": "range",
+                "label": "Shadow Intensity",
+                "default": 0.3,
+                "min": 0.1,
+                "max": 1,
+                "step": 0.1,
+                "condition": {
+                    "enable_shadow": true
                 }
             },
-            
-            "design_section": {
-                "type": "section",
-                "label": "Design Settings",
-                "controls": {
-                    "background_color": {
-                        "type": "color",
-                        "label": "Background Color",
-                        "default": "#ffffff"
-                    },
-                    "accent_color": {
-                        "type": "color",
-                        "label": "Accent Color",
-                        "default": "#007cba"
-                    },
-                    "border_radius": {
-                        "type": "range",
-                        "label": "Border Radius (px)",
-                        "default": 8,
-                        "min": 0,
-                        "max": 50,
-                        "step": 2
-                    },
-                    "enable_shadow": {
-                        "type": "toggle",
-                        "label": "Enable Shadow",
-                        "default": false
-                    },
-                    "shadow_intensity": {
-                        "type": "range",
-                        "label": "Shadow Intensity",
-                        "default": 0.3,
-                        "min": 0.1,
-                        "max": 1,
-                        "step": 0.1,
-                        "condition": {
-                            "enable_shadow": true
-                        }
-                    }
+            "enable_animations": {
+                "type": "toggle",
+                "label": "Enable Animations",
+                "default": false
+            },
+            "animation_type": {
+                "type": "select",
+                "label": "Animation Type",
+                "default": "fade",
+                "options": [
+                    {"key": "fade", "value": "Fade In"},
+                    {"key": "slide", "value": "Slide In"},
+                    {"key": "scale", "value": "Scale In"},
+                    {"key": "bounce", "value": "Bounce In"}
+                ],
+                "condition": {
+                    "enable_animations": true
                 }
             },
-            
-            "animation_section": {
-                "type": "section",
-                "label": "Animation Settings",
-                "controls": {
-                    "enable_animations": {
-                        "type": "toggle",
-                        "label": "Enable Animations",
-                        "default": false
-                    },
-                    "animation_type": {
-                        "type": "select",
-                        "label": "Animation Type",
-                        "default": "fade",
-                        "options": [
-                            {"key": "fade", "value": "Fade In"},
-                            {"key": "slide", "value": "Slide In"},
-                            {"key": "scale", "value": "Scale In"},
-                            {"key": "bounce", "value": "Bounce In"}
-                        ],
-                        "condition": {
-                            "enable_animations": true
-                        }
-                    },
-                    "animation_delay": {
-                        "type": "range",
-                        "label": "Animation Delay (ms)",
-                        "default": 0,
-                        "min": 0,
-                        "max": 2000,
-                        "step": 100,
-                        "condition": {
-                            "enable_animations": true
-                        }
-                    }
+            "animation_delay": {
+                "type": "range",
+                "label": "Animation Delay (ms)",
+                "default": 0,
+                "min": 0,
+                "max": 2000,
+                "step": 100,
+                "condition": {
+                    "enable_animations": true
                 }
             }
         }
@@ -1684,41 +1371,6 @@ Here's a comprehensive example showing all configuration options:
     <?php endif; ?>
     
 </div>
-```
-
-## Configuration Constants
-
-The plugin behavior can be customized using WordPress constants in your `wp-config.php`:
-
-### ZENB_REGISTER_EXAMPLE_BLOCKS
-Controls whether the plugin registers example blocks from its examples directory.
-
-```php
-// Disable example blocks registration (default: true)
-define('ZENB_REGISTER_EXAMPLE_BLOCKS', false);
-```
-
-**When to use**: Disable this in production if you're only using your own blocks and don't want the example blocks to appear in the block inserter.
-
-### ZENB_ADMIN_UI
-Controls the developer settings interface.
-
-```php
-// Disable admin UI and block configuration interface (default: true)
-define('ZENB_ADMIN_UI', false);
-```
-
-**When to use**: Disable this in production or when distributing to clients who shouldn't modify block settings. When enabled, it provides a block configuration interface in wp-admin.
-
-### Custom Block Paths
-Templates can be placed in alternative locations using the `zenb_block_paths` filter:
-
-```php
-add_filter('zenb_block_paths', function($paths) {
-    $paths[] = get_template_directory() . '/custom-blocks/';
-    $paths[] = WP_CONTENT_DIR . '/shared-blocks/';
-    return $paths;
-});
 ```
 
 ## Best Practices
@@ -2094,264 +1746,123 @@ function initializeLazyLoading() {
     },
     "zenb": {
         "controls": {
-            "layout_settings": {
-                "type": "section",
-                "label": "Layout Configuration",
-                "controls": {
-                    "content_type": {
-                        "type": "select",
-                        "label": "Content Type",
-                        "default": "mixed",
-                        "options": [
-                            {"key": "text", "value": "Text Only"},
-                            {"key": "image", "value": "Image Focus"},
-                            {"key": "video", "value": "Video Content"},
-                            {"key": "mixed", "value": "Mixed Content"}
-                        ]
-                    },
-                    "grid_columns": {
-                        "type": "range",
-                        "label": "Grid Columns",
-                        "default": 2,
-                        "min": 1,
-                        "max": 4,
-                        "condition": {
-                            "content_type": ["mixed", "image"]
-                        }
-                    },
-                    "vertical_alignment": {
-                        "type": "select",
-                        "label": "Vertical Alignment",
-                        "default": "center",
-                        "options": [
-                            {"key": "top", "value": "Top"},
-                            {"key": "center", "value": "Center"},
-                            {"key": "bottom", "value": "Bottom"}
-                        ]
-                    }
+            "content_type": {
+                "type": "select",
+                "label": "Content Type",
+                "default": "mixed",
+                "options": [
+                    {"key": "text", "value": "Text Only"},
+                    {"key": "image", "value": "Image Focus"},
+                    {"key": "video", "value": "Video Content"},
+                    {"key": "mixed", "value": "Mixed Content"}
+                ]
+            },
+            "grid_columns": {
+                "type": "range",
+                "label": "Grid Columns",
+                "default": 2,
+                "min": 1,
+                "max": 4,
+                "condition": {
+                    "content_type": ["mixed", "image"]
                 }
             },
-            
-            "content_settings": {
-                "type": "section",
-                "label": "Content Settings",
-                "controls": {
-                    "show_title": {
-                        "type": "toggle",
-                        "label": "Show Title",
-                        "default": true
-                    },
-                    "title_level": {
-                        "type": "select",
-                        "label": "Title Level",
-                        "default": "h2",
-                        "options": [
-                            {"key": "h1", "value": "H1"},
-                            {"key": "h2", "value": "H2"},
-                            {"key": "h3", "value": "H3"},
-                            {"key": "h4", "value": "H4"}
-                        ],
-                        "condition": {
-                            "show_title": true
-                        }
-                    },
-                    "content_limit": {
-                        "type": "number",
-                        "label": "Content Word Limit",
-                        "default": 0,
-                        "min": 0,
-                        "help": "Set to 0 for unlimited content"
-                    }
+            "vertical_alignment": {
+                "type": "select",
+                "label": "Vertical Alignment",
+                "default": "center",
+                "options": [
+                    {"key": "top", "value": "Top"},
+                    {"key": "center", "value": "Center"},
+                    {"key": "bottom", "value": "Bottom"}
+                ]
+            },
+            "show_title": {
+                "type": "toggle",
+                "label": "Show Title",
+                "default": true
+            },
+            "title_level": {
+                "type": "select",
+                "label": "Title Level",
+                "default": "h2",
+                "options": [
+                    {"key": "h1", "value": "H1"},
+                    {"key": "h2", "value": "H2"},
+                    {"key": "h3", "value": "H3"},
+                    {"key": "h4", "value": "H4"}
+                ],
+                "condition": {
+                    "show_title": true
                 }
             },
-            
-            "media_settings": {
-                "type": "section",
-                "label": "Media Settings",
-                "controls": {
-                    "image_aspect_ratio": {
-                        "type": "select",
-                        "label": "Image Aspect Ratio",
-                        "default": "16-9",
-                        "options": [
-                            {"key": "1-1", "value": "Square (1:1)"},
-                            {"key": "4-3", "value": "Standard (4:3)"},
-                            {"key": "16-9", "value": "Widescreen (16:9)"},
-                            {"key": "21-9", "value": "Ultrawide (21:9)"}
-                        ],
-                        "condition": {
-                            "content_type": ["image", "mixed"]
-                        }
-                    },
-                    "enable_lightbox": {
-                        "type": "toggle",
-                        "label": "Enable Lightbox",
-                        "default": false,
-                        "condition": {
-                            "content_type": ["image", "mixed"]
-                        }
-                    },
-                    "lazy_load": {
-                        "type": "toggle",
-                        "label": "Lazy Load Images",
-                        "default": true
-                    }
+            "content_limit": {
+                "type": "number",
+                "label": "Content Word Limit",
+                "default": 0,
+                "min": 0,
+                "help": "Set to 0 for unlimited content"
+            },
+            "image_aspect_ratio": {
+                "type": "select",
+                "label": "Image Aspect Ratio",
+                "default": "16-9",
+                "options": [
+                    {"key": "1-1", "value": "Square (1:1)"},
+                    {"key": "4-3", "value": "Standard (4:3)"},
+                    {"key": "16-9", "value": "Widescreen (16:9)"},
+                    {"key": "21-9", "value": "Ultrawide (21:9)"}
+                ],
+                "condition": {
+                    "content_type": ["image", "mixed"]
                 }
             },
-            
-            "animation_settings": {
-                "type": "section",
-                "label": "Animation Settings",
-                "controls": {
-                    "entrance_animation": {
-                        "type": "select",
-                        "label": "Entrance Animation",
-                        "default": "none",
-                        "options": [
-                            {"key": "none", "value": "None"},
-                            {"key": "fadeIn", "value": "Fade In"},
-                            {"key": "slideUp", "value": "Slide Up"},
-                            {"key": "slideLeft", "value": "Slide Left"},
-                            {"key": "scaleIn", "value": "Scale In"},
-                            {"key": "rotateIn", "value": "Rotate In"}
-                        ]
-                    },
-                    "animation_duration": {
-                        "type": "range",
-                        "label": "Animation Duration (ms)",
-                        "default": 600,
-                        "min": 200,
-                        "max": 2000,
-                        "step": 100,
-                        "condition": {
-                            "entrance_animation": ["fadeIn", "slideUp", "slideLeft", "scaleIn", "rotateIn"]
-                        }
-                    },
-                    "stagger_delay": {
-                        "type": "range",
-                        "label": "Stagger Delay (ms)",
-                        "default": 100,
-                        "min": 0,
-                        "max": 500,
-                        "step": 50,
-                        "condition": {
-                            "entrance_animation": ["fadeIn", "slideUp", "slideLeft", "scaleIn", "rotateIn"]
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-### 2. E-commerce Integration Block
-
-**Configuration** (`product-grid/product-grid.json`):
-```json
-{
-    "name": "zen-blocks/product-grid",
-    "title": "Product Grid",
-    "category": "widgets",
-    "icon": "products",
-    "description": "Display WooCommerce products in a customizable grid",
-    "supports": {
-        "align": ["wide", "full"],
-        "spacing": {
-            "padding": true,
-            "margin": true
-        }
-    },
-    "render": "file:./render.php",
-    "zenb": {
-        "controls": {
-            "query_settings": {
-                "type": "section",
-                "label": "Product Query",
-                "controls": {
-                    "product_category": {
-                        "type": "select",
-                        "label": "Product Category",
-                        "default": "",
-                        "options": "dynamic:product_categories",
-                        "help": "Select a specific category or leave empty for all products"
-                    },
-                    "product_count": {
-                        "type": "number",
-                        "label": "Number of Products",
-                        "default": 8,
-                        "min": 1,
-                        "max": 50
-                    },
-                    "order_by": {
-                        "type": "select",
-                        "label": "Order By",
-                        "default": "date",
-                        "options": [
-                            {"key": "date", "value": "Date"},
-                            {"key": "title", "value": "Title"},
-                            {"key": "price", "value": "Price"},
-                            {"key": "popularity", "value": "Popularity"},
-                            {"key": "rating", "value": "Rating"}
-                        ]
-                    },
-                    "order": {
-                        "type": "select",
-                        "label": "Order",
-                        "default": "DESC",
-                        "options": [
-                            {"key": "ASC", "value": "Ascending"},
-                            {"key": "DESC", "value": "Descending"}
-                        ]
-                    }
+            "enable_lightbox": {
+                "type": "toggle",
+                "label": "Enable Lightbox",
+                "default": false,
+                "condition": {
+                    "content_type": ["image", "mixed"]
                 }
             },
-            
-            "display_settings": {
-                "type": "section",
-                "label": "Display Options",
-                "controls": {
-                    "columns_desktop": {
-                        "type": "range",
-                        "label": "Columns (Desktop)",
-                        "default": 4,
-                        "min": 1,
-                        "max": 6
-                    },
-                    "columns_tablet": {
-                        "type": "range",
-                        "label": "Columns (Tablet)",
-                        "default": 2,
-                        "min": 1,
-                        "max": 4
-                    },
-                    "columns_mobile": {
-                        "type": "range",
-                        "label": "Columns (Mobile)",
-                        "default": 1,
-                        "min": 1,
-                        "max": 2
-                    },
-                    "show_price": {
-                        "type": "toggle",
-                        "label": "Show Price",
-                        "default": true
-                    },
-                    "show_rating": {
-                        "type": "toggle",
-                        "label": "Show Rating",
-                        "default": true
-                    },
-                    "show_excerpt": {
-                        "type": "toggle",
-                        "label": "Show Product Excerpt",
-                        "default": false
-                    },
-                    "show_add_to_cart": {
-                        "type": "toggle",
-                        "label": "Show Add to Cart Button",
-                        "default": true
-                    }
+            "lazy_load": {
+                "type": "toggle",
+                "label": "Lazy Load Images",
+                "default": true
+            },
+            "entrance_animation": {
+                "type": "select",
+                "label": "Entrance Animation",
+                "default": "none",
+                "options": [
+                    {"key": "none", "value": "None"},
+                    {"key": "fadeIn", "value": "Fade In"},
+                    {"key": "slideUp", "value": "Slide Up"},
+                    {"key": "slideLeft", "value": "Slide Left"},
+                    {"key": "scaleIn", "value": "Scale In"},
+                    {"key": "rotateIn", "value": "Rotate In"}
+                ]
+            },
+            "animation_duration": {
+                "type": "range",
+                "label": "Animation Duration (ms)",
+                "default": 600,
+                "min": 200,
+                "max": 2000,
+                "step": 100,
+                "condition": {
+                    "entrance_animation": ["fadeIn", "slideUp", "slideLeft", "scaleIn", "rotateIn"]
+                }
+            },
+            "stagger_delay": {
+                "type": "range",
+                "label": "Stagger Delay (ms)",
+                "default": 100,
+                "min": 0,
+                "max": 500,
+                "step": 50,
+                "condition": {
+                    "entrance_animation": ["fadeIn", "slideUp", "slideLeft", "scaleIn", "rotateIn"]
                 }
             }
         }
@@ -2372,197 +1883,60 @@ function initializeLazyLoading() {
     "render": "file:./render.php",
     "zenb": {
         "controls": {
-            "query_controls": {
-                "type": "section",
-                "label": "Team Query",
-                "controls": {
-                    "department": {
-                        "type": "select",
-                        "label": "Department",
-                        "default": "",
-                        "options": "dynamic:team_departments"
-                    },
-                    "member_count": {
-                        "type": "number",
-                        "label": "Number of Members",
-                        "default": 6,
-                        "min": 1,
-                        "max": 20
-                    },
-                    "featured_only": {
-                        "type": "toggle",
-                        "label": "Featured Members Only",
-                        "default": false
-                    }
-                }
+            "department": {
+                "type": "select",
+                "label": "Department",
+                "default": "",
+                "options": "dynamic:team_departments"
             },
-            
-            "layout_controls": {
-                "type": "section",
-                "label": "Layout Options",
-                "controls": {
-                    "layout_style": {
-                        "type": "select",
-                        "label": "Layout Style",
-                        "default": "grid",
-                        "options": [
-                            {"key": "grid", "value": "Grid Layout"},
-                            {"key": "list", "value": "List Layout"},
-                            {"key": "carousel", "value": "Carousel"}
-                        ]
-                    },
-                    "image_shape": {
-                        "type": "select",
-                        "label": "Image Shape",
-                        "default": "circle",
-                        "options": [
-                            {"key": "circle", "value": "Circle"},
-                            {"key": "square", "value": "Square"},
-                            {"key": "rounded", "value": "Rounded Square"}
-                        ]
-                    },
-                    "show_bio": {
-                        "type": "toggle",
-                        "label": "Show Biography",
-                        "default": true
-                    },
-                    "show_social": {
-                        "type": "toggle",
-                        "label": "Show Social Links",
-                        "default": true
-                    }
-                }
+            "member_count": {
+                "type": "number",
+                "label": "Number of Members",
+                "default": 6,
+                "min": 1,
+                "max": 20
+            },
+            "featured_only": {
+                "type": "toggle",
+                "label": "Featured Members Only",
+                "default": false
+            },
+            "layout_style": {
+                "type": "select",
+                "label": "Layout Style",
+                "default": "grid",
+                "options": [
+                    {"key": "grid", "value": "Grid Layout"},
+                    {"key": "list", "value": "List Layout"},
+                    {"key": "carousel", "value": "Carousel"}
+                ]
+            },
+            "image_shape": {
+                "type": "select",
+                "label": "Image Shape",
+                "default": "circle",
+                "options": [
+                    {"key": "circle", "value": "Circle"},
+                    {"key": "square", "value": "Square"},
+                    {"key": "rounded", "value": "Rounded Square"}
+                ]
+            },
+            "show_bio": {
+                "type": "toggle",
+                "label": "Show Biography",
+                "default": true
+            },
+            "show_social": {
+                "type": "toggle",
+                "label": "Show Social Links",
+                "default": true
             }
         }
     }
 }
 ```
 
-## Internationalization and Localization
 
-### Setting Up Translation Support
-
-**In block.json**:
-```json
-{
-    "textdomain": "zen-blocks",
-    "title": "My Block Title",
-    "description": "My block description",
-    "keywords": ["keyword1", "keyword2"]
-}
-```
-
-**In PHP template**:
-```php
-<div class="multilingual-block">
-    <h2><?php echo esc_html(__('Welcome Message', 'zen-blocks')); ?></h2>
-    
-    <p><?php 
-        printf(
-            __('Hello %s, welcome to our site!', 'zen-blocks'),
-            esc_html($user_name)
-        ); 
-    ?></p>
-    
-    <div zen-edit="content" zen-type="wysiwyg">
-        <?php echo wp_kses_post(__('Default content that can be translated', 'zen-blocks')); ?>
-    </div>
-</div>
-```
-
-**Creating Translation Files**:
-1. Generate POT file: `wp i18n make-pot . languages/zen-blocks.pot`
-2. Create language-specific files: `zen-blocks-es_ES.po`, `zen-blocks-fr_FR.po`
-3. Compile to binary: `msgfmt zen-blocks-es_ES.po -o zen-blocks-es_ES.mo`
-
-## Debugging and Development Tools
-
-### Debug Mode Configuration
-
-**Enable debug mode in wp-config.php**:
-```php
-define('WP_DEBUG', true);
-define('ZENB_DEBUG', true);
-```
-
-**Debug information in templates**:
-```php
-<?php if (defined('ZENB_DEBUG') && ZENB_DEBUG): ?>
-    <div class="zenb-debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-family: monospace;">
-        <h4>Zen Blocks Debug Info</h4>
-        <pre><?php echo esc_html(print_r(compact(array_keys(get_defined_vars())), true)); ?></pre>
-    </div>
-<?php endif; ?>
-```
-
-### Error Handling
-
-**Template error handling**:
-```php
-<?php
-try {
-    // Your block logic here
-    if (!isset($required_variable)) {
-        throw new Exception('Required variable not set');
-    }
-    
-    // Block rendering
-    ?>
-    <div class="block-content">
-        <!-- Your content -->
-    </div>
-    <?php
-    
-} catch (Exception $e) {
-    if (defined('WP_DEBUG') && WP_DEBUG) {
-        echo '<div class="zenb-error">Error: ' . esc_html($e->getMessage()) . '</div>';
-    }
-}
-?>
-```
-
-## Migration and Compatibility
-
-### Upgrading from Other Block Systems
-
-**From ACF Blocks**:
-```php
-// Convert ACF field calls to Zen Blocks variables
-// ACF: get_field('field_name')
-// Zen Blocks: $field_name (automatically available)
-
-// Before (ACF):
-if (get_field('show_header')) {
-    echo '<h2>' . get_field('header_text') . '</h2>';
-}
-
-// After (Zen Blocks):
-if ($show_header) {
-    echo '<h2 zen-edit="header_text" zen-type="text">Default Header</h2>';
-}
-```
-
-**From Custom Gutenberg Blocks**:
-```javascript
-// Convert registerBlockType to block.json configuration
-// Move edit/save functions to PHP templates
-// Convert attributes to zenb.controls
-
-// Before (JavaScript):
-registerBlockType('my-plugin/custom-block', {
-    title: 'Custom Block',
-    attributes: {
-        content: {
-            type: 'string',
-            default: ''
-        }
-    },
-    edit: EditComponent,
-    save: SaveComponent
-});
-
-// After (Zen Blocks): Use block.json + PHP template
-```
 
 ## Performance Optimization
 
@@ -2838,204 +2212,6 @@ add_filter('zenb_dynamic_options', function($options, $option_type) {
 }, 10, 2);
 ```
 
-### Custom Template Functions
-
-Create reusable functions for your templates:
-
-```php
-// functions.php or plugin file
-function zenb_get_social_icons($social_links) {
-    $icons = [
-        'facebook' => '📘',
-        'twitter' => '🐦',
-        'instagram' => '📷',
-        'linkedin' => '💼',
-        'youtube' => '📺'
-    ];
-    
-    $output = '<div class="social-links">';
-    foreach ($social_links as $platform => $url) {
-        if (!empty($url)) {
-            $icon = $icons[$platform] ?? '🔗';
-            $output .= sprintf(
-                '<a href="%s" target="_blank" rel="noopener" class="social-link social-%s">%s</a>',
-                esc_url($url),
-                esc_attr($platform),
-                $icon
-            );
-        }
-    }
-    $output .= '</div>';
-    
-    return $output;
-}
-
-function zenb_format_price($price, $currency = ') {
-    return $currency . number_format($price, 2);
-}
-
-function zenb_truncate_text($text, $limit = 100) {
-    if (strlen($text) <= $limit) {
-        return $text;
-    }
-    return substr($text, 0, $limit) . '...';
-}
-```
-
-**Usage in templates**:
-```php
-<div class="team-member">
-    <h3 zen-edit="member_name" zen-type="text">John Doe</h3>
-    <p zen-edit="member_bio" zen-type="wysiwyg">
-        <?php echo zenb_truncate_text('Default bio text', 150); ?>
-    </p>
-    
-    <?php if ($show_social && !empty($social_links)): ?>
-        <?php echo zenb_get_social_icons($social_links); ?>
-    <?php endif; ?>
-</div>
-```
-
-## API Reference
-
-### Zen Blocks Hooks and Filters
-
-#### Filters
-
-**`zenb_block_template_vars`** - Modify variables available in templates
-```php
-add_filter('zenb_block_template_vars', function($vars, $block_name, $attributes) {
-    // Add custom variables
-    $vars['current_user_role'] = wp_get_current_user()->roles[0] ?? 'guest';
-    $vars['site_info'] = [
-        'name' => get_bloginfo('name'),
-        'url' => home_url()
-    ];
-    
-    return $vars;
-}, 10, 3);
-```
-
-**`zenb_block_render_output`** - Modify final block output
-```php
-add_filter('zenb_block_render_output', function($output, $block_name, $attributes) {
-    // Add wrapper for specific blocks
-    if ($block_name === 'zen-blocks/special-block') {
-        $output = '<div class="special-wrapper">' . $output . '</div>';
-    }
-    
-    return $output;
-}, 10, 3);
-```
-
-**`zenb_control_value`** - Modify control values before use
-```php
-add_filter('zenb_control_value', function($value, $control_name, $block_name) {
-    // Modify specific control values
-    if ($control_name === 'image_url' && empty($value)) {
-        return get_template_directory_uri() . '/assets/default-image.jpg';
-    }
-    
-    return $value;
-}, 10, 3);
-```
-
-#### Actions
-
-**`zenb_before_block_render`** - Execute code before block rendering
-```php
-add_action('zenb_before_block_render', function($block_name, $attributes) {
-    // Enqueue additional scripts for specific blocks
-    if ($block_name === 'zen-blocks/interactive-map') {
-        wp_enqueue_script('google-maps-api');
-    }
-}, 10, 2);
-```
-
-**`zenb_after_block_render`** - Execute code after block rendering
-```php
-add_action('zenb_after_block_render', function($block_name, $attributes) {
-    // Log block usage for analytics
-    if (function_exists('log_block_usage')) {
-        log_block_usage($block_name);
-    }
-}, 10, 2);
-```
-
-### JavaScript API
-
-**Client-side block interaction**:
-```javascript
-// zen-blocks-api.js
-window.ZenBlocks = {
-    // Initialize all blocks on page
-    init: function() {
-        this.initSliders();
-        this.initAccordions();
-        this.initAnimations();
-    },
-    
-    // Register custom block behavior
-    registerBlockType: function(blockName, config) {
-        this.blockTypes = this.blockTypes || {};
-        this.blockTypes[blockName] = config;
-        
-        // Auto-initialize if DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.initBlockType(blockName);
-            });
-        } else {
-            this.initBlockType(blockName);
-        }
-    },
-    
-    // Initialize specific block type
-    initBlockType: function(blockName) {
-        const config = this.blockTypes[blockName];
-        if (!config) return;
-        
-        const blocks = document.querySelectorAll(`[data-block-type="${blockName}"]`);
-        blocks.forEach(block => {
-            if (config.init) config.init(block);
-        });
-    },
-    
-    // Utility functions
-    utils: {
-        debounce: function(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        },
-        
-        throttle: function(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-    }
-};
-
-// Auto-initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.ZenBlocks.init();
-});
-```
-
 ## Security Considerations
 
 ### Input Sanitization
@@ -3051,26 +2227,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <?php echo esc_html($user_link_text); ?>
     </a>
 </div>
-```
-
-### Capability Checks
-
-**Restrict block access based on user capabilities**:
-```php
-// In block configuration or functions.php
-add_filter('zenb_user_can_edit_block', function($can_edit, $block_name, $user_id) {
-    // Restrict sensitive blocks to administrators only
-    $restricted_blocks = [
-        'zen-blocks/admin-dashboard',
-        'zen-blocks/user-management'
-    ];
-    
-    if (in_array($block_name, $restricted_blocks)) {
-        return user_can($user_id, 'manage_options');
-    }
-    
-    return $can_edit;
-}, 10, 3);
 ```
 
 ### Data Validation
@@ -3099,217 +2255,3 @@ add_filter('zenb_validate_control_value', function($value, $control_config, $con
     }
 }, 10, 3);
 ```
-
-## Deployment and Distribution
-
-### Plugin Distribution
-
-**For theme developers**:
-1. Include Zen Blocks as a required plugin
-2. Bundle blocks within theme structure
-3. Use `ZENB_ADMIN_UI` constant to control access
-
-**For plugin developers**:
-1. Include Zen Blocks as a dependency
-2. Register custom block paths
-3. Provide migration tools if needed
-
-### Version Control Best Practices
-
-**.gitignore example**:
-```gitignore
-# WordPress core files
-wp-config.php
-wp-content/uploads/
-wp-content/cache/
-
-# Zen Blocks specific
-zen-blocks/*/node_modules/
-zen-blocks/*/.sass-cache/
-zen-blocks/*/dist/
-
-# Keep source files
-!zen-blocks/*/*.php
-!zen-blocks/*/*.json
-!zen-blocks/*/*.css
-!zen-blocks/*/*.js
-!zen-blocks/*/*.scss
-```
-
-**Deployment script example**:
-```bash
-#!/bin/bash
-# deploy-zen-blocks.sh
-
-# Build assets
-for block_dir in zen-blocks/*/; do
-    if [ -f "$block_dir/package.json" ]; then
-        cd "$block_dir"
-        npm install
-        npm run build
-        cd - > /dev/null
-    fi
-done
-
-# Minify CSS and JS
-find zen-blocks/ -name "*.css" -not -name "*.min.css" -exec bash -c 'npx postcss "$1" --use autoprefixer --use cssnano -o "${1%.css}.min.css"' _ {} \;
-find zen-blocks/ -name "*.js" -not -name "*.min.js" -exec bash -c 'npx terser "$1" --compress --mangle -o "${1%.js}.min.js"' _ {} \;
-
-echo "Zen Blocks deployment complete!"
-```
-
-## Extending Zen Blocks
-
-### Creating Custom Extensions
-
-**Plugin structure for Zen Blocks extension**:
-```
-zen-blocks-extension/
-├── zen-blocks-extension.php
-├── includes/
-│   ├── class-custom-controls.php
-│   ├── class-block-manager.php
-│   └── class-template-loader.php
-├── assets/
-│   ├── admin.css
-│   ├── admin.js
-│   └── frontend.js
-└── blocks/
-    ├── advanced-gallery/
-    ├── contact-form/
-    └── pricing-table/
-```
-
-**Main plugin file**:
-```php
-<?php
-/**
- * Plugin Name: Zen Blocks Extension
- * Description: Additional blocks and features for Zen Blocks
- * Version: 1.0.0
- * Requires Plugins: zen-blocks
- */
-
-// Prevent direct access
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-class ZenBlocksExtension {
-    public function __construct() {
-        add_action('plugins_loaded', [$this, 'init']);
-    }
-    
-    public function init() {
-        // Check if Zen Blocks is active
-        if (!function_exists('zenb_register_block')) {
-            add_action('admin_notices', [$this, 'missing_dependency_notice']);
-            return;
-        }
-        
-        // Register custom block paths
-        add_filter('zenb_block_paths', [$this, 'add_block_paths']);
-        
-        // Add custom control types
-        add_filter('zenb_control_types', [$this, 'add_control_types']);
-        
-        // Register additional hooks
-        $this->register_hooks();
-    }
-    
-    public function add_block_paths($paths) {
-        $paths[] = plugin_dir_path(__FILE__) . 'blocks/';
-        return $paths;
-    }
-    
-    public function add_control_types($types) {
-        $types['post_select'] = [
-            'render_callback' => [$this, 'render_post_select'],
-            'sanitize_callback' => 'absint'
-        ];
-        
-        $types['term_select'] = [
-            'render_callback' => [$this, 'render_term_select'],
-            'sanitize_callback' => 'absint'
-        ];
-        
-        return $types;
-    }
-    
-    public function missing_dependency_notice() {
-        echo '<div class="notice notice-error"><p>';
-        echo 'Zen Blocks Extension requires the Zen Blocks plugin to be installed and activated.';
-        echo '</p></div>';
-    }
-}
-
-new ZenBlocksExtension();
-```
-
-### Template Inheritance System
-
-Create a system for extending base templates:
-
-**Base template** (`base-card/base-card.php`):
-```php
-<div class="base-card <?php echo esc_attr($card_style ?? 'default'); ?>">
-    <?php do_action('zenb_before_card_content', $attributes ?? []); ?>
-    
-    <div class="card-header">
-        <?php if (!empty($title)): ?>
-            <h3 zen-edit="title" zen-type="text"><?php echo esc_html($title); ?></h3>
-        <?php endif; ?>
-        
-        <?php do_action('zenb_card_header_content', $attributes ?? []); ?>
-    </div>
-    
-    <div class="card-body">
-        <div zen-edit="content" zen-type="wysiwyg">
-            <p>Default card content</p>
-        </div>
-        
-        <?php do_action('zenb_card_body_content', $attributes ?? []); ?>
-    </div>
-    
-    <div class="card-footer">
-        <?php do_action('zenb_card_footer_content', $attributes ?? []); ?>
-    </div>
-    
-    <?php do_action('zenb_after_card_content', $attributes ?? []); ?>
-</div>
-```
-
-**Extended template** (`product-card/product-card.php`):
-```php
-<?php
-// Extend base card with product-specific features
-add_action('zenb_card_header_content', function($attributes) {
-    if (!empty($attributes['product_badge'])) {
-        echo '<span class="product-badge">' . esc_html($attributes['product_badge']) . '</span>';
-    }
-});
-
-add_action('zenb_card_body_content', function($attributes) {
-    if (!empty($attributes['product_price'])) {
-        echo '<div class="price">' . zenb_format_price($attributes['product_price']) . '</div>';
-    }
-});
-
-add_action('zenb_card_footer_content', function($attributes) {
-    echo '<button class="add-to-cart btn">Add to Cart</button>';
-});
-
-// Include base template
-include locate_template('zen-blocks/base-card/base-card.php');
-?>
-```
-
-## Conclusion
-
-Zen Blocks provides a powerful, flexible system for creating custom WordPress blocks without the complexity of traditional block development. By leveraging familiar HTML/PHP templates and comprehensive JSON configuration, developers can create sophisticated, interactive blocks that integrate seamlessly with the WordPress block editor.
-
-The extensive configuration options available through WordPress's block JSON schema, combined with Zen Blocks' intuitive template system and rich control types, make it possible to build everything from simple content blocks to complex, data-driven components.
-
-Whether you're building a simple testimonial block or a comprehensive e-commerce product showcase, Zen Blocks provides the tools and flexibility needed to create professional, maintainable block solutions that enhance the WordPress editing experience.
-
-For additional support and examples, refer to the plugin's GitHub repository and the included example blocks. The WordPress Block Editor Handbook also provides valuable insights into block development best practices and advanced techniques.
