@@ -1,7 +1,6 @@
-export const capabilities = {
-	resources: {},
-	prompts: {},
-	tools: {},
-};
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { createResources } from "./resources.js";
 
-const test = "Hello, world!";
+export const createCapabilities = (server: McpServer) => {
+	createResources(server);
+};

@@ -14,10 +14,11 @@
 	],
 	"license": "MIT",
 	"author": "Gustavo Gomez",
-	"type": "commonjs",
-	"main": "index.ts",
+	"type": "module",
+	"main": "src/index.ts",
 	"scripts": {
 		"build": "tsc",
+		"build:watch": "tsc --watch",
 		"clean": "rm -rf build",
 		"prepublishOnly": "npm run clean && npm run build && chmod +x build/index.js",
 		"start": "node build/index.js",
@@ -35,11 +36,11 @@
 		"@biomejs/biome": "^2.2.0",
 		"@types/node": "^24.2.1",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.1.5"
+		"lint-staged": "^16.1.5",
+		"typescript": "^5.9.2"
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.3",
-		"axios": "^1.11.0",
 		"zod": "^3.25.76"
 	}
 }

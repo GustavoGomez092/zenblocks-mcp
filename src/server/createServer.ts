@@ -1,14 +1,13 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { capabilities } from "./capabilities.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { createCapabilities } from "./capabilities.js";
 
 export function createServer(version: string) {
-	return new Server(
-		{
-			name: "zenblocks-mcp-server",
-			version,
-		},
-		{
-			capabilities,
-		},
-	);
+	const server = new McpServer({
+		name: "zenblocks-mcp-server",
+		version,
+	});
+
+	createCapabilities(server);
+
+	return server;
 }
