@@ -1,35 +1,43 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { readFileFromDocs } from "../utils/fileReader.js";
-import { getAllResourceMappings } from "./resourceMappings.js";
+import { getAllToolMappings } from "./toolsMapping.js";
 
 export const createTools = async (server: McpServer) => {
-	// use the resource mappings file to create a single tool that returns all the contents of all the resources
-	const mappings = getAllResourceMappings();
-	const allResources: string[] = [];
+	// Use the tool mappings to recursively create tools
+	const toolMappings = getAllToolMappings();
 
-	for (const mapping of mappings) {
-		// get the resource content
-		const content = await readFileFromDocs(mapping?.filename);
+	for (const mapping of toolMappings) {
+		// Register each tool with its own content from the MD file
+		server.registerTool(
+			mapping.name,
+			{
+				title: mapping.title,
+				description: mapping.description,
+			},
+			async () => {
+				try {
+					// Get the content from the corresponding MD file
+					const content = await readFileFromDocs(mapping.filename);
 
-		allResources.push(content);
+					return {
+						content: [
+							{
+								type: "text",
+								text: content,
+							},
+						],
+					};
+				} catch (error) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `Error reading file ${mapping.filename}: ${error}`,
+							},
+						],
+					};
+				}
+			},
+		);
 	}
-
-	server.registerTool(
-		"zenblocks-docs",
-		{
-			title: "ZenBlocks docs",
-			description: "Complete documentation on how to make ZenBlocks",
-			// Add more tool configuration here
-		},
-		async () => {
-			return {
-				content: [
-					{
-						type: "text",
-						text: allResources.join("\n"),
-					},
-				],
-			};
-		},
-	);
 };

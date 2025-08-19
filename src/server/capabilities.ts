@@ -3,6 +3,6 @@ import { createResources } from "./resources.js";
 import { createTools } from "./tools.js";
 
 export const createCapabilities = async (server: McpServer) => {
-	createResources(server);
+	// createResources(server);
 	await createTools(server);
 };
