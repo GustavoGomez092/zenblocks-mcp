@@ -27,6 +27,9 @@
 		"prepare": "husky",
 		"postbuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
 	},
+	"bin": {
+		"zenblocks": "src/index.ts"
+	},
 	"lint-staged": {
 		"**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
 			"npx biome check --write"
