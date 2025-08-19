@@ -28,7 +28,7 @@
 		"postbuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
 	},
 	"bin": {
-		"zenblocks": "npx tsx src/index.ts"
+		"zenblocks": "tsx src/index.ts"
 	},
 	"lint-staged": {
 		"**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
@@ -44,6 +44,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.3",
+		"tsx": "^4.20.4",
 		"zod": "^3.25.76"
 	}
 }

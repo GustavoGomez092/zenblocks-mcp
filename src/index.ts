@@ -1,3 +1,4 @@
+#!/usr/bin/env tsx
 import { start } from "./server/index.js";
 import { logError } from "./utils/logger.js";
 
