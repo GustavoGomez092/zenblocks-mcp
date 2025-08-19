@@ -28,7 +28,7 @@
 		"postbuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
 	},
 	"bin": {
-		"zenblocks": "dist/index.js"
+		"zenblocks": "npx tsx src/index.ts"
 	},
 	"lint-staged": {
 		"**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
