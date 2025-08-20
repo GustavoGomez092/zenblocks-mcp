@@ -21,14 +21,14 @@
 		"clean": "rm -rf build",
 		"prepublishOnly": "npm run clean && npm run build && chmod +x build/index.js",
 		"start": "node dist/index.js",
-		"dev": "npm run postbuild && npm run build && npx tsx watch src/index.ts",
+		"dev": "npm run prebuild && npm run build && npx tsx watch src/index.ts",
 		"biome:check-staged": "lint-staged",
 		"biome:check": "npx biome check --write",
 		"prepare": "husky",
-		"postbuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
+		"prebuild": "mkdir -p dist/docs && cp -R src/docs/* dist/docs/"
 	},
 	"bin": {
-		"zenblocks": "tsx src/index.ts"
+		"zenblocks": "dist/index.js"
 	},
 	"lint-staged": {
 		"**/*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
@@ -44,7 +44,6 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.17.3",
-		"tsx": "^4.20.4",
 		"zod": "^3.25.76"
 	}
 }
